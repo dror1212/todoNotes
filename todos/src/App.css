@@ -1,0 +1,24 @@
+.App {
+  background-color: #423974;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  text-align: center;
+  background-color: #423974;
+  padding-top: 4vh;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(3px + 2vmin);
+  
+}
