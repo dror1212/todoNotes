@@ -2,21 +2,23 @@ import React from 'react';
 import {Card , Button, Input,Label,Icon} from 'semantic-ui-react'
 import Todo from './Todo';
 import { observer } from 'mobx-react';
+import axios from 'axios';
+import notesStore from '../stores/NotesStore';
 
 export type NoteProps = {
     _id : number;
     name : string;
     create : string;
     changed : string;
-    items : {_id : number, text : string}[];
+    items : {_id : number, text : string, isCompleted: boolean}[],
+    isExist : boolean
 }
 
 @observer
 class Note extends React.Component<NoteProps> {
     state = {
         name:"",
-        last:0,
-        changed : this.props.create
+        changed : this.props.changed
     }
 
     nowDate = () => {
@@ -29,11 +31,18 @@ class Note extends React.Component<NoteProps> {
     onNew = ()=>{
         if(this.state.name.length > 0)
         {
-            this.props.items.push({
-            _id: this.state.last,
-            text: this.state.name
+            const note = notesStore.notes.filter(note => this.props._id === note._id)[0]
+            note.items.push({
+                _id: this.props.items.length,
+                text: this.state.name,
+                isCompleted : false
             });
-            this.setState({last:this.state.last+1, changed:this.nowDate()})
+            note.changed = this.nowDate();
+            console.log(this.props._id);
+            axios.patch('http://localhost:5000/updateNote/' +note._id,note).then((res) => {           
+                console.log(res.data)
+            });
+            this.setState({changed:this.nowDate()})
         }
     }    
     
@@ -42,10 +51,12 @@ class Note extends React.Component<NoteProps> {
         this.setState({name:event.target.value})
     }
 
-    handleDeleteClick(event:any){
-
+    handleDeleteClick = () =>{
+        axios.delete('http://localhost:5000/deleteSpecificNote/' + this.props._id).then(res => {
+            console.log(res.data);
+            notesStore.notes = res.data;
+        });
     }
-
 
     render(){
         return (
@@ -58,7 +69,7 @@ class Note extends React.Component<NoteProps> {
                         meta={'Created: ' + this.props.create + '   Edited: ' + this.state.changed}                   
                         />
                         {this.props.items.map(item =>
-                            <Todo key = {item._id} text = {item.text}></Todo>
+                            <Todo key = {item._id} note_id = {this.props._id} _id = {item._id} text = {item.text} isCompleted = {item.isCompleted}></Todo>
                         )}
                         {"\n"}
                         <Input onChange={this.onNameChange.bind(this)} fluid = {true} size = "small" attached = 'top' placeholder="Name..."></Input>

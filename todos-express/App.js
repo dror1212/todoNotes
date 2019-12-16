@@ -1,94 +1,72 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const Note = require('./models/Notes');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://Admin:123456789q@todoscluster-jweuz.mongodb.net/test?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-
-function addItem(item,res) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        collection.insertOne(item).then(() => {
-            res.send("added");
-        });
-        //client.close();
-    });
-}
-
-function deleteItemById(id) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        collection.findOneAndDelete({_id :id});
-        //client.close();
-    });
-}
-
-function length(item,res) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        const count = collection.countDocuments().then((count) => {
-            res.send({count});
-        });
-        //client.close();
-    });  
-}
-
-function getOneById(res,id) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        const find = collection.findOne({_id :id}).then((find) => {
-            res.send(find);
-        });
-        //client.close();
-});   
-}
-
-function getAll(res) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        collection.find({}).toArray(function(err, result) {
-            res.send(result);
-        });
-        //client.close();
-    });   
-}
-
-function updateOne(req) {
-    client.connect(err => {
-        const database = client.db("TodoDatabase");
-        const collection = database.collection("todoList");
-        const find = collection.findOneAndReplace({_id :req.body._id},newItem);
-        //client.close();
-    });   
-}
+mongoose.connect("mongodb+srv://Admin:123456789q@todoscluster-jweuz.mongodb.net/TodoDatabase?retryWrites=true&w=majority",{ useUnifiedTopology: true, useNewUrlParser: true }, () => {
+    console.log("connected!");
+})
 
 const PORT = 5000;
 
-const app = express();
+app = express();
 
-app.get('/getAll',(req,res) => {
-    getAll(res);
+app.use(cors());
+app.use(bodyParser.json());
+
+app.get('/getAllNotes', async (req,res) => {
+    try {
+        const notes = await Note.find();
+        res.json(notes);
+    } catch(err) {
+        res.json({message : err});
+    }
 });
 
-app.get('/getOne',(req,res) => {
-    getOneById(res,req.body._id);
+app.get('/getSpecificNote/:noteId', async (req,res) => {
+    try {
+        const note = await Note.findById(req.params.noteId);
+        res.json(note)
+    } catch(err) {
+        res.json({message : err});
+    }
 });
 
-app.delete('/deleteById',(req,res) => {
-    deleteItemById(req.body._id);
+app.delete('/deleteSpecificNote/:noteId', async (req,res) => {
+    try {
+        const note = await Note.remove({_id : req.params.noteId});
+        res.json(note)
+    } catch(err) {
+        res.json({message : err});
+    }
 });
 
-app.post('/add',(req,res) => {
-    addItem(todosInfo,res);
+app.patch('/updateNote/:noteId', async (req,res) => {
+    try {
+        const note = await Note.updateOne({_id : req.params.noteId},
+                                {$set : {items : req.body.items}});
+        res.json(note)
+    } catch(err) {
+        res.json({message : err});
+    }
 });
 
-app.put('/update',(req,res) => {
-    updateOne(req);
+app.post('/createNote', async (req,res) => {
+    const note = new Note({
+        _id : req.body._id,
+        name : req.body.name,
+        create : req.body.create,
+        changed : req.body.create,
+        items : [],
+        isExist : req.body.isExist
+    })
+    try {
+        const savedNote = await note.save();
+        res.json(savedNote);
+    } catch(err) {
+        res.json({message : err});
+    }
 });
 
 app.listen(PORT,() => {

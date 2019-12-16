@@ -5,6 +5,7 @@ import './App.css'
 import {Button,Input} from 'semantic-ui-react'
 import notesStore from './stores/NotesStore';
 import { observer } from 'mobx-react';
+import axios from 'axios';
 
 
 @observer
@@ -12,34 +13,43 @@ class App extends React.Component {
 
   state = {
     name:"",
-    last:1
   }
-/*
+
   componentDidMount() {
-    notesStore.notes.push({
-      _id: 0,
-      name: "fgggg",
-      create: this.nowDate() ,
-      changed: this.nowDate(),
-      items: ["abc"]
-    });
+    this.update()
   }
-*/
+
+  update = () => {
+    axios.get('http://localhost:5000/getAllNotes').then(res => {
+      notesStore.notes = res.data;
+      });
+  }
+
   onNew = ()=>{
+    this.update()
     if(notesStore.notes.length < 10 && this.state.name.length > 0){
-      notesStore.notes.push({
-        _id: this.state.last,
+      let len = 0
+      if(notesStore.notes.length > 0)
+        len = notesStore.notes[notesStore.notes.length-1]._id + 1;
+      const note = {
+        _id: len,
         name: this.state.name,
         create: this.nowDate(),
         changed: this.nowDate(),
-        items: []
-      });
-      this.setState({last:this.state.last+1})
+        items: [],
+        isExist : false      
+      };
+      console.log(note);
+      axios.post('http://localhost:5000/createNote', note ).then(res => {
+        console.log(res.data);
+        this.update();
+      })
     }
 
   }
 
   nowDate =() =>{
+    this.update()
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -48,6 +58,7 @@ class App extends React.Component {
   }
 
   onNameChange(event:any){
+    this.update()
     this.setState({name:event.target.value})
   }
 
@@ -58,7 +69,7 @@ class App extends React.Component {
           <Button onClick={this.onNew} fluid = {true} size = "big" attached = 'top' color = 'blue'>New</Button>
           <Input onChange={this.onNameChange.bind(this)} fluid = {true} size = "big" attached = 'top' placeholder="Name..."></Input>
           {notesStore.notes.map(note =>
-            <Note key={note._id} items = {note.items} changed = {note.changed} create = {note.create} _id = {note._id} name = {note.name}/>
+            <Note key={note._id} isExist = {note.isExist} items = {note.items} changed = {note.changed} create = {note.create} _id = {note._id} name = {note.name}/>
           )}
       </div>
   );
