@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/todoNotes/static/css/main.3519a276.chunk.css",
+    "main.js": "/todoNotes/static/js/main.96e81843.chunk.js",
+    "main.js.map": "/todoNotes/static/js/main.96e81843.chunk.js.map",
+    "runtime-main.js": "/todoNotes/static/js/runtime-main.9fd1f65c.js",
+    "runtime-main.js.map": "/todoNotes/static/js/runtime-main.9fd1f65c.js.map",
+    "static/css/2.534d1a7c.chunk.css": "/todoNotes/static/css/2.534d1a7c.chunk.css",
+    "static/js/2.1c2bbcf7.chunk.js": "/todoNotes/static/js/2.1c2bbcf7.chunk.js",
+    "static/js/2.1c2bbcf7.chunk.js.map": "/todoNotes/static/js/2.1c2bbcf7.chunk.js.map",
+    "index.html": "/todoNotes/index.html",
+    "precache-manifest.144623c0e7142a6ca2dd28306212e683.js": "/todoNotes/precache-manifest.144623c0e7142a6ca2dd28306212e683.js",
+    "service-worker.js": "/todoNotes/service-worker.js",
+    "static/css/2.534d1a7c.chunk.css.map": "/todoNotes/static/css/2.534d1a7c.chunk.css.map",
+    "static/css/main.3519a276.chunk.css.map": "/todoNotes/static/css/main.3519a276.chunk.css.map",
+    "static/js/2.1c2bbcf7.chunk.js.LICENSE.txt": "/todoNotes/static/js/2.1c2bbcf7.chunk.js.LICENSE.txt",
+    "static/media/semantic.min.css": "/todoNotes/static/media/outline-icons.ef60a4f6.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.9fd1f65c.js",
+    "static/css/2.534d1a7c.chunk.css",
+    "static/js/2.1c2bbcf7.chunk.js",
+    "static/css/main.3519a276.chunk.css",
+    "static/js/main.96e81843.chunk.js"
+  ]
+}
